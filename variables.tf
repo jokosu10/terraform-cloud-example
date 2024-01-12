@@ -16,10 +16,10 @@ variable region {
     description = "Default region from AWS"
 }
 
-variable avability_zone {
+variable availability_zone {
     type        = string
     default     = "ap-southeast-1a"
-    description = "Default avability zone from AWS"
+    description = "Default availability zone from AWS"
 }
 
 variable "vpc_cidr" {

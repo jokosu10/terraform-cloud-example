@@ -9,7 +9,7 @@ resource "aws_vpc" "my_vpc" {
 resource "aws_subnet" "my_vpc_subnet" {
     vpc_id            = aws_vpc.my_vpc.id  // Ensure this matches your VPC resource
     cidr_block        = "10.93.0.0/26"          // Subnet within the VPC CIDR range
-    availability_zone = var.avability_zone            // Change to your desired AZ
+    availability_zone = var.availability_zone            // Change to your desired AZ
 
     tags = {
         Name = "${var.vpc_name}-${local.vpc_name_prefix}"
@@ -22,6 +22,7 @@ resource "aws_key_pair" "my_ssh_key" {
 }
 
 resource "aws_security_group" "my_firewall" {
+    vpc_id = aws_vpc.my_vpc.id
     name = local.firewall_name
     description = "Allow SSH inbound traffic"
 
@@ -47,10 +48,9 @@ resource "aws_instance" "my_instance" {
     subnet_id     = aws_subnet.my_vpc_subnet.id
     key_name      = aws_key_pair.my_ssh_key.key_name
 
-    security_groups = [aws_security_group.my_firewall.name]
+    vpc_security_group_ids  = [aws_security_group.my_firewall.id]
 
     tags = {
         Name = "${var.instance_name}-${local.instance_name_prefix}"
     }
 }
-
