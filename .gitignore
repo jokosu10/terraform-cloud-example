@@ -1,0 +1,26 @@
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Terraform plan file
+*.tfplan
+
+# Terraform workspace dir
+.terraform/
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# User-specific configuration
+.terraformrc
+terraform.rc
+
+# Sensitive data files
+*.tfvars
+*.tfvars.json
+
+# Log files
+*.log
