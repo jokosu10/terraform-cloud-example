@@ -1,15 +1,27 @@
 resource "aws_vpc" "my_vpc" {
     cidr_block = var.vpc_cidr
+    enable_dns_hostnames = true
+    enable_dns_support   = true
 
     tags = {
         Name = "${var.vpc_name}-${local.vpc_name_prefix}"
     }
 }
 
+resource "aws_internet_gateway" "my_igw" {
+    vpc_id = aws_vpc.my_vpc.id
+}
+
+resource "aws_route" "internet_access" {
+    route_table_id         = aws_vpc.my_vpc.main_route_table_id
+    destination_cidr_block = "0.0.0.0/0"
+    gateway_id             = aws_internet_gateway.my_igw.id
+}
+
 resource "aws_subnet" "my_vpc_subnet" {
-    vpc_id            = aws_vpc.my_vpc.id  // Ensure this matches your VPC resource
-    cidr_block        = "10.93.0.0/26"          // Subnet within the VPC CIDR range
-    availability_zone = var.availability_zone            // Change to your desired AZ
+    vpc_id            = aws_vpc.my_vpc.id
+    cidr_block        = "10.93.0.0/26"
+    availability_zone = var.availability_zone
 
     tags = {
         Name = "${var.vpc_name}-${local.vpc_name_prefix}"
@@ -50,7 +62,16 @@ resource "aws_instance" "my_instance" {
 
     vpc_security_group_ids  = [aws_security_group.my_firewall.id]
 
+    associate_public_ip_address = false
+
     tags = {
         Name = "${var.instance_name}-${local.instance_name_prefix}"
     }
+}
+
+resource "aws_eip" "my_eip" {
+    domain = "vpc"
+
+    instance = aws_instance.my_instance.id
+    depends_on = [aws_internet_gateway.my_igw]
 }
