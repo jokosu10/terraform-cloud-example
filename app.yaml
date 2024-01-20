@@ -1,0 +1,6 @@
+---
+- name: bootstrap app server
+  hosts: aws
+  become: yes
+  roles:
+    - node-exporter
